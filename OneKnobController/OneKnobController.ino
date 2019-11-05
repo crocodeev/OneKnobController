@@ -19,7 +19,7 @@
 bool swState;
 bool lastBtnState = false;
 
-long previousMillis1 = 0;
+long previousMillis = 0;
 
 byte octava = 36;
 byte previousNoteNumber = octava;
@@ -46,8 +46,6 @@ const byte notes_patterns[12] = {
 MIDI_CREATE_DEFAULT_INSTANCE();
 
 void setup() {
-  //delay for wait input
-  delay(1000);
   //setup serial for MIDI
   Serial.begin(31250);
   //Serial.begin(19200);
@@ -57,6 +55,9 @@ void setup() {
   pinMode(SW_MODE, INPUT);
   pinMode(POT,      INPUT);
   pinMode(SENS,     INPUT);
+  pinMode(DATA_PIN, OUTPUT);
+  pinMode(BIT_CLOCK_PIN, OUTPUT);
+  pinMode(DIGIT_CLOCK_PIN, OUTPUT); 
 
  //change mode - switch "on" for button mode
  //for activate button mode 1. before begin set switch on 2. press btn for 3 seconds
@@ -74,13 +75,14 @@ void loop() {
     }else{
     input = SENS;  
     }
+
   //reading mode
 
   bool btnMode = digitalRead(SW_MODE); // HIGH button mode
 
   //taking note from input
     
-  byte noteNumber = chooseNote(input, octava);
+  byte noteNumber = chooseNote(input);
 
   //show note
 
@@ -88,15 +90,15 @@ void loop() {
 
   //midi work
    
-   sendToMIDI(noteNumber, btnMode); 
+  sendToMIDI(noteNumber + octava, btnMode); //поправка на октаву
   
     }  
 
 //functions
 
-byte chooseNote(byte pin, byte octava){
+byte chooseNote(byte pin){
   int  val = analogRead(pin);
-  byte number = map(val,0,1023,0,11) + octava;
+  byte number = map(val,0,1023,0,12);
   return number;
   }
 
@@ -108,10 +110,10 @@ if(btnMode){//btn mode on
     bool btnState = digitalRead(BTN);
     //check: is current button state equal last?
     //not equal  means that user push on or push off btn
-    if(digitalRead(BTN) != lastBtnState){
+    if(btnState != lastBtnState){
 
     //check: is pressed  
-      if(digitalRead(BTN)){// btn state eqaul push on
+      if(btnState){// btn state eqaul push on
     //check: is there new data at input
     if (noteNumber != previousNoteNumber){
     MIDI.sendNoteOff(previousNoteNumber,0,1);
@@ -152,17 +154,12 @@ if (noteNumber != previousNoteNumber){
 void displayNote(byte noteNumber)
 {
   byte pattern;
-  
-  // get the digit pattern to be updated
+ 
   pattern = notes_patterns[noteNumber];
 
-  // turn off the output of 74HC595
   digitalWrite(DIGIT_CLOCK_PIN, LOW);
   
-  // update data pattern to be outputed from 74HC595
-  // because it's a common anode LED, the pattern needs to be inverted
   shiftOut(DATA_PIN, BIT_CLOCK_PIN, MSBFIRST, ~pattern);
-  
-  // turn on the output of 74HC595
+ 
   digitalWrite(DIGIT_CLOCK_PIN, HIGH);
 }    
