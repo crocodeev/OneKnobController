@@ -105,13 +105,13 @@ byte chooseNote(byte pin){
 
 void sendToMIDI(byte noteNumber, bool btnMode){
 
-if(btnMode){//btn mode on
- 
-    bool btnState = digitalRead(BTN);
-    //check: is current button state equal last?
-    //not equal  means that user push on or push off btn
-    if(btnState != lastBtnState){
+//if button mode high, that mean button control is active
+if(btnMode){
 
+    //read button state  
+    bool btnState = digitalRead(BTN);
+    //is user change button state
+    if(btnState != lastBtnState){
     //check: is pressed  
       if(btnState){// btn state eqaul push on
     //check: is there new data at input
@@ -133,9 +133,34 @@ if(btnMode){//btn mode on
     //Serial.println(previousNoteNumber);
         }
     previousNoteNumber =  noteNumber;    
-    lastBtnState = btnState;    
+    lastBtnState = btnState;
+    //if current button state equal with previous    
+  }else{
+    if(btnState){// btn state eqaul push on
+    //check: is there new data at input
+    if (noteNumber != previousNoteNumber){
+    MIDI.sendNoteOff(previousNoteNumber,0,1);
+    //Serial.println("Send note off");
+    //Serial.println(previousNoteNumber);
+    MIDI.sendNoteOn(noteNumber, 127, 1); 
+    //Serial.println("Send note on");
+    //Serial.println(noteNumber);
+    }else{
+    MIDI.sendNoteOn(noteNumber, 127, 1); 
+    //Serial.println("Send note on");
+    //Serial.println(noteNumber); 
+    }     
+        }else{
+    MIDI.sendNoteOff(previousNoteNumber,0,1);
+    //Serial.println("Send note off");
+    //Serial.println(previousNoteNumber);
+        }
+    previousNoteNumber =  noteNumber;    
+    lastBtnState = btnState; 
   }
-}else{//btn mode off
+  
+//button mode is off  
+}else{
    
 if (noteNumber != previousNoteNumber){
     MIDI.sendNoteOff(previousNoteNumber,0,1);
