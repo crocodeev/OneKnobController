@@ -123,12 +123,14 @@ if(btnMode){
       lastBtnState = btnState;
        //if current button state equal with previous    
   }else{
+    if(btnState){
       //check is note change
       if(noteNumber != previousNoteNumber){
         MIDI.sendNoteOff(previousNoteNumber,0,1);
         MIDI.sendNoteOn(noteNumber, 127, 1);
         previousNoteNumber = noteNumber;
         }
+    }
   }
   
 //button mode is off  
