@@ -11,7 +11,7 @@ There is two mode, that we can use in combination
 * input mode - choose note input between potentiomentr or photoresistor
 * switch note on/off - choose on if we want to on/off note by telegraph switch
 
-### Prerequisites
+### Hardware
 
 For this project we use arduino promini, that didn't have USB-TTL adapter,
 so you need to firmware it over
@@ -23,4 +23,4 @@ so you need to firmware it over
 ### Schematic and Layout
 
 https://easyeda.com/svin862003/oneknobcontroller
-
+http://fritzing.org/projects/oneknobcontroller
