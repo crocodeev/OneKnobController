@@ -11,6 +11,10 @@ There is two mode, that we can use in combination
 * input mode - choose note input between potentiomentr or photoresistor
 * switch note on/off - choose on if we want to on/off note by telegraph switch
 
+## Demo
+
+https://www.youtube.com/watch?v=g3zCaOftv18
+
 ### Hardware
 
 For this project we use arduino promini, that didn't have USB-TTL adapter,
